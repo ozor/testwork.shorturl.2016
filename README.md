@@ -38,7 +38,7 @@
 Чтобы их подгрузить, необходимо запустить composer.json файлы в обоих фреймворках, чтобы подгрузить зависимости.
 В корневой директории заигнорена папка **runtime**.
 
-Чтобы не париться с инициализацией гита, в корне лежит архив shorturl.zip, включающий всё окружение, актуальное на 10.03.2016
+Чтобы не париться с инициализацией гита, в корне лежит архив **testwork.shorturl.2016.zip**, включающий всё окружение, актуальное на **10.03.2016**
 
 ### БД
 
@@ -57,3 +57,41 @@
 - PHP 5.6.4
 
 На Apache server работа не проверялась. Но противопоказаний не имеется.
+
+### Мои настройки Nginx
+
+~~~
+	server {
+
+		listen 80;
+		server_name shorturl;
+
+		index index.php index.html index.htm;
+		set $root_path 'D:\\server\\html\\testwork.shorturl.2016';
+		root $root_path;
+
+		location / {
+			try_files $uri $uri/ /index.php?$query_string;
+		}
+
+		location ~ \.php {
+			fastcgi_pass 127.0.0.1:9000;
+			fastcgi_index /index.php;
+
+			include fastcgi_params;
+
+			fastcgi_split_path_info       ^(.+\.php)(/.+)$;
+			fastcgi_param PATH_INFO       $fastcgi_path_info;
+			fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		}
+
+		location ~* ^/(css|img|js|flv|swf|download)/(.+)$ {
+			root $root_path;
+		}
+
+		location ~ /\.ht {
+			deny all;
+		}
+	}
+~~~
